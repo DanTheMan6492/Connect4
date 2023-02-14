@@ -27,13 +27,27 @@ public class Frame extends JPanel implements KeyListener, MouseListener, ActionL
     Token curr = new Token();
     public static int mouseX;
 	public static int mouseY;
-	
+	public static int displayWin = -1;
+	boolean gameOver = false;
     public void paint(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        if(!curr.dropping) curr.x = mouseX-30;
-        curr.paint(g);
+        if(!curr.dropping && !gameOver) curr.x = mouseX-30;
+        if(!gameOver) curr.paint(g);
         b.paint(g);
+        
+        if(displayWin != -1) {
+        	gameOver = true;
+        	Image Sprite = getImage("/imgs/" + displayWin + ".png");
+        	AffineTransform tx = AffineTransform.getTranslateInstance(70, 100);
+        	tx.scale(5, 5);
+        	g2.drawImage(Sprite, tx, null);
+        	
+        	if(displayWin == 0) System.out.println("TIE!");
+        	System.out.println("Player " + displayWin + " Won!");
+        }
+        
+        
 	}
 
     
@@ -67,8 +81,7 @@ public class Frame extends JPanel implements KeyListener, MouseListener, ActionL
         repaint();
     }
     
-    public boolean randBool() {if (Math.random() > 0.5) {return true;} else {return false;}}
-    
+   
     Timer t;
     
     public Frame() {
@@ -113,7 +126,8 @@ public class Frame extends JPanel implements KeyListener, MouseListener, ActionL
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		int pos = ((mouseX-10)-105)/85;
+		if(gameOver) return;
+		int pos = ((mouseX+10)-105)/85;
 		if(pos < 0) pos = 0;
 		if(pos > 6) pos = 6;
 		int row = b.nextPlace(0);

@@ -35,6 +35,7 @@ public class Token {
 			ay = 0;
 			vy = 0;
 			Frame.b.board[pos[0]][pos[1]] = player;
+			Frame.displayWin = Frame.b.checkWin();
 			flipPlayers();
 			
 		}
