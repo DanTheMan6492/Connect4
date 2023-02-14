@@ -13,6 +13,8 @@ import java.awt.geom.AffineTransform;
 import java.net.URL;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -20,16 +22,18 @@ import javax.swing.Timer;
 
 
 public class Frame extends JPanel implements KeyListener, MouseListener, ActionListener{
-    private AffineTransform tx;
-    Board b = new Board();
-    
-    
-    /* paint is getting called roughly 144x per second */
+
+    static Board b = new Board();
+    Token curr = new Token();
+    public static int mouseX;
+	public static int mouseY;
+	
     public void paint(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+        if(!curr.dropping) curr.x = mouseX-30;
+        curr.paint(g);
         b.paint(g);
-	    
 	}
 
     
@@ -78,9 +82,16 @@ public class Frame extends JPanel implements KeyListener, MouseListener, ActionL
 		f.setLayout(new GridLayout(1,2));
 		f.addMouseListener(this);
 		f.addKeyListener(this);
-		Timer t = new Timer(16, this);
+		Timer t = new Timer(4, this);
 		t.start();
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.addMouseMotionListener(new MouseMotionAdapter() {
+			public void mouseMoved(MouseEvent me)
+			{
+			  mouseX = me.getX();
+			  mouseY = me.getY();
+			}
+		});
 		f.setVisible(true);
         
        
@@ -102,7 +113,11 @@ public class Frame extends JPanel implements KeyListener, MouseListener, ActionL
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+		int pos = ((mouseX-10)-105)/85;
+		if(pos < 0) pos = 0;
+		if(pos > 6) pos = 6;
+		int row = b.nextPlace(0);
+		if(b.nextPlace(pos) != 0)	curr.drop(pos, b.nextPlace(pos)-1);
 	}
 
 
